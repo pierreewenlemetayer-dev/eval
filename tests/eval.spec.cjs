@@ -16,6 +16,7 @@ async function start(page,{conj=5,nat=5,mode='qcm',correction='progress',keep='n
  await page.locator('[name=conjType][value='+mode+']').check();
  await page.locator('[name=conjCorrection][value='+correction+']').check();
  await page.locator('[name=keep][value='+keep+']').check();
+ await page.locator('[data-star="1"]').click();
  await page.locator('#begin').click();
  await expect(page.getByText('Conjugaison',{exact:true})).toBeVisible();
 }
@@ -130,7 +131,7 @@ test('les paramètres restent disponibles après une nouvelle évaluation',async
 test('douze étoiles, choix par défaut et score non redondant',async({page})=>{
  await expect(page.locator('#storyMode')).toHaveValue('stars');
  await expect(page.locator('[data-star]')).toHaveCount(12);
- await expect(page.locator('#stars')).toHaveValue('1');
+ await expect(page.locator('#stars')).toHaveValue('');
  await page.locator('[data-star="2"]').click();
  await expect(page.locator('#stars')).toHaveValue('2');
  await start(page,{conj:5,nat:5});
@@ -150,4 +151,41 @@ test('Entrée permet de continuer après Natures et à la fin de chaque étape',
  await page.locator('[data-class=nom]').click();
  await page.keyboard.press('Enter');
  await expect(page.getByText('Mot 2 / 5')).toBeVisible();
+});
+
+test('la difficulté est obligatoire et aucune étoile ne démarre sélectionnée',async({page})=>{
+ await expect(page.locator('#stars')).toHaveValue('');
+ await expect(page.locator('.star-choice.active')).toHaveCount(0);
+ await page.locator('#name').fill('Élève test');
+ await page.locator('#begin').click();
+ await expect(page.getByRole('alert')).toContainText('Choisissez un niveau de difficulté en cliquant sur une étoile.');
+ await page.locator('[data-star="1"]').click();
+ await page.locator('#begin').click();
+ await expect(page.getByText('Conjugaison',{exact:true})).toBeVisible();
+});
+test('Entrée passe à la suite sans ouvrir le corrigé de conjugaison',async({page})=>{
+ await start(page,{correction:'end'});
+ for(let i=0;i<5;i++){await page.locator('[data-option]').first().click();await page.locator('#next').click()}
+ await expect(page.locator('.correction-details')).not.toHaveAttribute('open','');
+ await page.keyboard.press('Enter');
+ await expect(page.getByText('Identifiez la classe grammaticale')).toBeVisible();
+});
+test('le texte reste consultable pendant le QCM',async({page})=>{
+ await start(page,{keep:'yes'});
+ await completeConj(page,5);
+ await completeNatures(page,5);
+ page.on('dialog',d=>d.accept());
+ await page.locator('#next').click();
+ await expect(page.locator('.reading-reference')).toHaveAttribute('open','');
+ await expect(page.locator('.reading-reference article.story')).toBeVisible();
+});
+test('Entrée valide les réponses du QCM de compréhension',async({page})=>{
+ await start(page);
+ await completeConj(page,5);
+ await completeNatures(page,5);
+ page.on('dialog',d=>d.accept());
+ await page.locator('#next').click();
+ await page.locator('[data-option]').first().click();
+ await page.keyboard.press('Enter');
+ await expect(page.locator('#next')).toHaveText('Suivant');
 });
