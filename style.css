@@ -50,4 +50,4 @@ button.secondary:not(:disabled):hover{background:#fff2ad;color:var(--dark)}
 
 /* Infobulle JLisi indépendante du titre natif du navigateur. */
 .star-picker{position:relative}
-.star-picker[data-tooltip]::after{content:attr(data-tooltip);position:absolute;z-index:20;left:0;top:calc(100% + 7px);background:var(--dark);color:#fff;padding:9px 13px;border-radius:8px;font:500 13px/1.4 Verdana,Arial,sans-serif;box-shadow:0 5px 15px #172b5433;max-width:min(340px,90vw);pointer-events:none}
+.star-picker[data-tooltip]::after{content:attr(data-tooltip);position:absolute;z-index:20;left:0;top:calc(100% + 5px);background:#fff;color:#39445b;border:1px solid #cbd2df;padding:5px 8px;border-radius:4px;font:400 12px/1.35 Verdana,Arial,sans-serif;box-shadow:0 2px 5px #172b5412;max-width:min(340px,90vw);pointer-events:none}
