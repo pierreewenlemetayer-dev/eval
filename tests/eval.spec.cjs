@@ -42,7 +42,7 @@ async function completeRec(page){
  for(let i=0;i<10;i++){
    await page.locator('[data-option]').first().click();
    await page.locator('#next').click();
-   if(i<9)await page.locator('#next').click();
+   await page.locator('#next').click();
  }
  await expect(page.getByText('Étape terminée')).toBeVisible();
  await page.locator('#go').click();
