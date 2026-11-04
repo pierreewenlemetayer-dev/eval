@@ -3,7 +3,7 @@ const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/st
 const code=fs.readFileSync('app.js','utf8').replace(/boot\(\);\s*$/,'');
 const data={conj:JSON.parse(fs.readFileSync('data/conjugaison.json')),nat:JSON.parse(fs.readFileSync('data/natures.json')),rec:JSON.parse(fs.readFileSync('data/recits.json'))};
 const root={innerHTML:''};
-const ctx={document:{getElementById:id=>id==='app'?root:{onclick:null}},console,localStorage:{setItem(){},removeItem(){}},Date,Math,confirm:()=>true};
+const ctx={document:{getElementById:id=>id==='app'?root:{onclick:null},addEventListener(){}},console,localStorage:{setItem(){},removeItem(){}},Date,Math,confirm:()=>true};
 ctx.__data=data;
 vm.createContext(ctx);
 vm.runInContext(code+'\nDATA=globalThis.__data;globalThis.__test={conjugations,natures,story,valid,canon};',ctx);
