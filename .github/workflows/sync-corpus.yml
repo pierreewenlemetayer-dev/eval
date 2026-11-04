@@ -1,5 +1,9 @@
 name: Synchroniser les corpus Eval
 on:
+  push:
+    paths:
+      - '.github/workflows/sync-corpus.yml'
+      - 'scripts/sync.py'
   workflow_dispatch:
   schedule:
     - cron: '17 4 * * *'
