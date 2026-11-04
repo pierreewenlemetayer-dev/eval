@@ -187,5 +187,6 @@ test('Entrée valide les réponses du QCM de compréhension',async({page})=>{
  await page.locator('#next').click();
  await page.locator('[data-option]').first().click();
  await page.keyboard.press('Enter');
- await expect(page.locator('#next')).toHaveText('Suivant');
+ await expect(page.getByText('Question 2 / 10')).toBeVisible();
+ await expect(page.locator('#next')).toHaveText('Valider');
 });
