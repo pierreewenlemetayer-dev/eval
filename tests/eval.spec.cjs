@@ -105,3 +105,22 @@ test('les sous-catégories grammaticales sont sélectionnables',async({page})=>{
  await page.locator('[data-answer="pronom:personnel"]').click();
  await expect(page.locator('#next')).toBeEnabled();
 });
+
+test('Entrée permet de passer à la conjugaison suivante après correction',async({page})=>{
+ await start(page,{mode:'write',correction:'progress'});
+ const first=await page.locator('.prompt').textContent();
+ await page.locator('#writeAnswer').fill('réponse de test');
+ await page.locator('#writeAnswer').press('Enter');
+ await expect(page.locator('#next')).toHaveText('Suivant');
+ await page.keyboard.press('Enter');
+ await expect(page.getByText('Question 2 / 5')).toBeVisible();
+ await expect(page.locator('.prompt')).not.toHaveText(first);
+});
+test('les paramètres restent disponibles après une nouvelle évaluation',async({page})=>{
+ await start(page);
+ page.on('dialog',d=>d.accept());
+ await page.locator('#home').click();
+ await expect(page.locator('#storyMode')).toBeVisible();
+ await page.locator('#storyMode').selectOption('stars');
+ await expect(page.locator('#stars option[value="9"]')).toBeDisabled();
+});
