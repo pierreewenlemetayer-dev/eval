@@ -95,7 +95,7 @@ test('la reprise conserve la fin de la première étape',async({page})=>{
  await completeConj(page,5);
  await page.reload();
  await page.locator('#resume').click();
- await expect(page.getByText('Natures',{exact:true})).toBeVisible();
+ await expect(page.getByText('Identifiez la classe grammaticale')).toBeVisible();
 });
 test('les sous-catégories grammaticales sont sélectionnables',async({page})=>{
  await start(page);
