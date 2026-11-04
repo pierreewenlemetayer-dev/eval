@@ -1,0 +1,42 @@
+name: Publier Eval sur GitHub Pages
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'style.css'
+      - 'app.js'
+      - 'data/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - name: Vérifier les ressources indispensables
+        run: |
+          test -s index.html
+          test -s app.js
+          test -s style.css
+          test -s data/conjugaison.json
+          test -s data/natures.json
+          test -s data/recits.json
+          python3 scripts/check_data.py
+          node --check app.js
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - id: deployment
+        uses: actions/deploy-pages@v4
