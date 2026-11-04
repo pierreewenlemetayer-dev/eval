@@ -52,7 +52,7 @@ test('parcours complet et note finale',async({page})=>{
  await completeConj(page,5);
  await completeNatures(page,5);
  await completeRec(page);
- await expect(page.getByText('Résultats de l’évaluation')).toBeVisible();
+ await expect(page.getByText('Résultat de l’évaluation')).toBeVisible();
  await expect(page.locator('.result')).toContainText('/ 20');
  await expect(page.getByText('Élève test')).toBeVisible();
 });
@@ -70,9 +70,10 @@ test('reprise après correction progressive sans double validation',async({page}
 });
 test('niveaux sans récit désactivés',async({page})=>{
  await page.locator('#storyMode').selectOption('stars');
- await expect(page.locator('#stars option[value="9"]')).toHaveAttribute('disabled','');
- await expect(page.locator('#stars option[value="10"]')).toHaveAttribute('disabled','');
- await expect(page.locator('#stars option[value="12"]')).toHaveAttribute('disabled','');
+ await expect(page.locator('#starButtons')).toBeVisible();
+ await expect(page.locator('[data-star="9"]')).toBeDisabled();
+ await expect(page.locator('[data-star="10"]')).toBeDisabled();
+ await expect(page.locator('[data-star="12"]')).toBeDisabled();
 });
 test('correction différée et texte consultable',async({page})=>{
  await start(page,{correction:'end',keep:'yes'});
@@ -122,5 +123,31 @@ test('les paramètres restent disponibles après une nouvelle évaluation',async
  await page.locator('#home').click();
  await expect(page.locator('#storyMode')).toBeVisible();
  await page.locator('#storyMode').selectOption('stars');
- await expect(page.locator('#stars option[value="9"]')).toHaveAttribute('disabled','');
+ await expect(page.locator('#starButtons')).toBeVisible();
+ await expect(page.locator('[data-star="9"]')).toBeDisabled();
+});
+
+test('douze étoiles, choix par défaut et score non redondant',async({page})=>{
+ await expect(page.locator('#storyMode')).toHaveValue('stars');
+ await expect(page.locator('[data-star]')).toHaveCount(12);
+ await expect(page.locator('#stars')).toHaveValue('1');
+ await page.locator('[data-star="2"]').click();
+ await expect(page.locator('#stars')).toHaveValue('2');
+ await start(page,{conj:5,nat:5});
+ await completeConj(page,5);
+ await completeNatures(page,5);
+ await completeRec(page);
+ await expect(page.getByText('Score total')).toHaveCount(0);
+ await expect(page.getByText('Note sur vingt')).toBeVisible();
+ await expect(page.locator('.results-title')).toHaveText('Résultat de l’évaluation');
+});
+test('Entrée permet de continuer après Natures et à la fin de chaque étape',async({page})=>{
+ await start(page);
+ for(let i=0;i<5;i++){await page.locator('[data-option]').first().click();await page.locator('#next').click();await page.locator('#next').click()}
+ await expect(page.locator('#go')).toBeVisible();
+ await page.keyboard.press('Enter');
+ await expect(page.getByText('Identifiez la classe grammaticale')).toBeVisible();
+ await page.locator('[data-class=nom]').click();
+ await page.keyboard.press('Enter');
+ await expect(page.getByText('Mot 2 / 5')).toBeVisible();
 });
