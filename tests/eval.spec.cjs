@@ -54,7 +54,6 @@ test('parcours complet et note finale',async({page})=>{
  await completeRec(page);
  await expect(page.getByText('Résultats de l’évaluation')).toBeVisible();
  await expect(page.locator('.result')).toContainText('/ 20');
- await expect(page.locator('.result')).toContainText('/ 20');
  await expect(page.getByText('Élève test')).toBeVisible();
 });
 test('reprise après correction progressive sans double validation',async({page})=>{
@@ -79,4 +78,30 @@ test('correction différée et texte consultable',async({page})=>{
  await start(page,{correction:'end',keep:'yes'});
  for(let i=0;i<5;i++){await page.locator('[data-option]').first().click();await page.locator('#next').click()}
  await expect(page.getByText('Voir le corrigé de conjugaison')).toBeVisible();
+});
+
+test('le mode sans texte retire le récit des questions',async({page})=>{
+ await start(page,{keep:'no'});
+ await completeConj(page,5);
+ await completeNatures(page,5);
+ page.on('dialog',d=>d.accept());
+ await expect(page.locator('article.story')).toBeVisible();
+ await page.locator('#next').click();
+ await expect(page.locator('article.story')).toHaveCount(0);
+ await expect(page.getByText('QCM sans le texte')).toBeVisible();
+});
+test('la reprise conserve la fin de la première étape',async({page})=>{
+ await start(page);
+ await completeConj(page,5);
+ await page.reload();
+ await page.locator('#resume').click();
+ await expect(page.getByText('Natures',{exact:true})).toBeVisible();
+});
+test('les sous-catégories grammaticales sont sélectionnables',async({page})=>{
+ await start(page);
+ await completeConj(page,5);
+ await page.locator('[data-class=pronom]').click();
+ await expect(page.locator('[data-answer="pronom:personnel"]')).toBeVisible();
+ await page.locator('[data-answer="pronom:personnel"]').click();
+ await expect(page.locator('#next')).toBeEnabled();
 });
