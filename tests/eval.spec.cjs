@@ -42,7 +42,7 @@ async function completeRec(page){
  for(let i=0;i<10;i++){
    await page.locator('[data-option]').first().click();
    await page.locator('#next').click();
-   await page.locator('#next').click();
+   if(i<9)await page.locator('#next').click();
  }
  await expect(page.getByText('Étape terminée')).toBeVisible();
  await page.locator('#go').click();
@@ -70,9 +70,9 @@ test('reprise après correction progressive sans double validation',async({page}
 });
 test('niveaux sans récit désactivés',async({page})=>{
  await page.locator('#storyMode').selectOption('stars');
- await expect(page.locator('#stars option[value="9"]')).toBeDisabled();
- await expect(page.locator('#stars option[value="10"]')).toBeDisabled();
- await expect(page.locator('#stars option[value="12"]')).toBeDisabled();
+ await expect(page.locator('#stars option[value="9"]')).toHaveAttribute('disabled','');
+ await expect(page.locator('#stars option[value="10"]')).toHaveAttribute('disabled','');
+ await expect(page.locator('#stars option[value="12"]')).toHaveAttribute('disabled','');
 });
 test('correction différée et texte consultable',async({page})=>{
  await start(page,{correction:'end',keep:'yes'});
@@ -122,5 +122,5 @@ test('les paramètres restent disponibles après une nouvelle évaluation',async
  await page.locator('#home').click();
  await expect(page.locator('#storyMode')).toBeVisible();
  await page.locator('#storyMode').selectOption('stars');
- await expect(page.locator('#stars option[value="9"]')).toBeDisabled();
+ await expect(page.locator('#stars option[value="9"]')).toHaveAttribute('disabled','');
 });
