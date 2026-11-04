@@ -7,6 +7,7 @@ on:
       - 'style.css'
       - 'data/**'
       - 'scripts/check_data.py'
+      - 'scripts/test_engines.cjs'
       - '.github/workflows/check.yml'
   workflow_dispatch:
 jobs:
@@ -24,3 +25,5 @@ jobs:
         run: node --check app.js
       - name: Vérifier la cohérence des données
         run: python scripts/check_data.py
+      - name: Tester les moteurs avec les corpus réels
+        run: node scripts/test_engines.cjs
