@@ -35,6 +35,21 @@ jobs:
           test -s data/recits.json
           python3 scripts/check_data.py
           node --check app.js
+      - name: Installer les dépendances des tests navigateur
+        run: npm install --no-audit --no-fund
+      - name: Installer Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Vérifier le parcours navigateur avant publication
+        run: npm run test:browser
+      - name: Conserver les traces en cas d'échec
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: erreurs-avant-publication
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
       - uses: actions/upload-pages-artifact@v3
         with:
           path: .
