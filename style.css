@@ -51,3 +51,7 @@ button.secondary:not(:disabled):hover{background:#fff2ad;color:var(--dark)}
 /* Infobulle JLisi indépendante du titre natif du navigateur. */
 .star-picker{position:relative}
 .star-picker[data-tooltip]::after{content:attr(data-tooltip);position:fixed;z-index:1000;left:var(--tip-x,12px);top:var(--tip-y,35px);transform:translateY(-100%);background:#fff;color:#39445b;border:1px solid #cbd2df;padding:5px 8px;border-radius:4px;font:400 12px/1.35 Verdana,Arial,sans-serif;box-shadow:0 2px 5px #172b5412;max-width:min(340px,90vw);pointer-events:none}
+
+/* Sélection des exercices : titre et cases centrés. */
+.exercise-selection{text-align:center}
+.exercise-selection .row{justify-content:center}
