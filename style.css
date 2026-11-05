@@ -55,3 +55,6 @@ button.secondary:not(:disabled):hover{background:#fff2ad;color:var(--dark)}
 /* Sélection des exercices : titre et cases centrés. */
 .exercise-selection{text-align:center}
 .exercise-selection .row{justify-content:center}
+
+/* Centrage du bouton de démarrage. */
+.begin-actions{justify-content:center}
