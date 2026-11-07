@@ -32,9 +32,9 @@ function natures(n){const entries=DATA.nat.map(([word,answers])=>({word,answers}
  for(let limit=1;picked.length<n&&limit<=Math.max(2,Math.ceil(n/8));limit++)for(const cat of shuffle(['nom',...cats])){if(picked.length>=n)break;if((counts[cat]||0)<limit)take(cat)}
  if(picked.length!==n)throw Error('Impossible de constituer un tirage équilibré.');return shuffle(picked)}
 function naturesFiltered(n,allowed){if(!allowed.length)throw Error('Sélectionnez au moins une nature grammaticale.');const chosen=new Set(allowed);
- // Ne proposer aucun mot dont une réponse acceptée appartient à une catégorie exclue.
- const entries=DATA.nat.map(([word,answers])=>({word,answers})).filter(q=>q.answers.length&&q.answers.every(a=>chosen.has(a)));
- const byCat=new Map();for(const q of entries)for(const a of q.answers){const cat=main(a)==='coordination'||main(a)==='subordination'?main(a):main(a);if(!byCat.has(cat))byCat.set(cat,[]);byCat.get(cat).push(q)}
+ // En sélection restreinte, exclure tous les mots ayant plusieurs réponses acceptées.
+ const entries=DATA.nat.map(([word,answers])=>({word,answers})).filter(q=>q.answers.length===1&&chosen.has(q.answers[0]));
+ const byCat=new Map();for(const q of entries)for(const a of q.answers){const cat=main(a);if(!byCat.has(cat))byCat.set(cat,[]);byCat.get(cat).push(q)}
  const cats=shuffle([...byCat.keys()]);if(!cats.length)throw Error('Aucun mot disponible pour ces natures.');const picked=[],used=new Set(),counts={};
  while(picked.length<n){let progressed=false;for(const cat of cats.slice().sort((a,b)=>(counts[a]||0)-(counts[b]||0)||Math.random()-.5)){const pool=shuffle(byCat.get(cat)).filter(q=>!used.has(q.word));if(!pool.length)continue;const q=pool[0];picked.push({...q,category:cat,answer:null,done:false,correct:false});used.add(q.word);counts[cat]=(counts[cat]||0)+1;progressed=true;if(picked.length===n)break}if(!progressed)break}
  if(picked.length!==n)throw Error('Impossible de générer l’exercice avec cette sélection. Le nombre de mots disponibles est insuffisant pour créer un exercice de '+n+' questions. Sélectionnez davantage de natures grammaticales ou réduisez le nombre de questions.');return shuffle(picked)}
